@@ -41,11 +41,12 @@ fn dft<I>(data: &mut I, start: usize, N: usize)
     for k in 0..N-1 {
         for n in 0..N-1 {
             let xn = match data.nth(start+n) {
-                None -> {println!("None!")},// return None},
+                None -> {return None},
                 Some(xn) -> xn
             };
             println!("{:?}", xn);
-            // let rk = ((2.0*std::f64::consts::PI*k*n)/N).cos()
+            // let rk = xn*((2.0*std::f64::consts::PI*k*n)/N).cos();
+            // let ik = xn*((2.0*std::f64::consts::PI*k*n)/N).sin();
         }
     }
 }
