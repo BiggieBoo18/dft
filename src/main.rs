@@ -37,7 +37,7 @@ fn create_sine_wave(a: f64, f: f64, fs: f64, length: f64) -> Buffered<SamplesBuf
     SamplesBuffer::new(1, fs as u32, data).buffered()
 }
 
-fn dft<I>(data: &mut I, start: usize, N: usize) -> Option<Vec<Complex<f64>>>
+fn dft<I>(data: &mut I, start: usize, #[allow(non_snake_case)] N: usize) -> Option<Vec<Complex<f64>>>
     where I: Iterator<Item=i16>
 {
     let vec_data: Vec<i16> = data.skip(start).collect();
@@ -57,7 +57,7 @@ fn dft<I>(data: &mut I, start: usize, N: usize) -> Option<Vec<Complex<f64>>>
     Some(ret)
 }
 
-fn idft(data: Vec<Complex<f64>>, N: usize) -> Option<Vec<Complex<f64>>>
+fn idft(data: Vec<Complex<f64>>, #[allow(non_snake_case)] N: usize) -> Option<Vec<Complex<f64>>>
     {
     let mut ret: Vec<Complex<f64>> = vec![Complex::new(0.0, 0.0);N];
     for k in 0..N {
@@ -85,6 +85,7 @@ fn main() {
     // println!("{}", source.sample_rate()); // 44100
     // println!("{}", source.channels()); // 1
     let fs = source.sample_rate();
+    #[allow(non_snake_case)]
     let N = 4096;
     // dft
     let dft_data = match dft(&mut source.clone(), 0, N) {
@@ -112,7 +113,7 @@ fn main() {
     // let data: Vec<(f64, f64)> = source.clone().take(255).enumerate().map(|(i, x)| (i as f64, x as f64/32767.0)).collect();
     let data: Vec<(f64, f64)> = idft_source.clone().take(440).enumerate().map(|(i, x)| (i as f64, x as f64/32767.0)).collect();
     draw_graph(&data, "wave.svg").expect("Failed draw graph");
-    let amplitude: Vec<(f64, f64)> = dft_data.clone().iter().map(|d| d.norm_sqr().sqrt()).zip(freq_vec.clone()).map(|(a, b)| (b, a)).collect();
+    let amplitude: Vec<(f64, f64)> = dft_data.clone().iter().map(|d| (d.norm_sqr().sqrt())/N as f64 * 2.0).zip(freq_vec.clone()).map(|(a, b)| (b, a)).collect();
     draw_graph(&amplitude, "amp.svg").expect("Failed draw graph");
     let phase: Vec<(f64, f64)> = dft_data.clone().iter().map(|d| {
         let mut ret = d.im.round().atan2(d.re.round());
